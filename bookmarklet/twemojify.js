@@ -290,9 +290,10 @@
     walkTheDOM(e.target, deepen);
     walkTheDOM(e.target, twemojiLoad);
     ql = twemojiQueue.length;
-    twemojiQueue.sort(function deeper(a, b) {return a.parentNode.$depth - b.parentNode.$depth;});
+    //twemojiQueue.sort(function deeper(a, b) {return a.parentNode.$depth - b.parentNode.$depth;});
     for (i = ql; i--;) {
       elt = twemojiQueue.pop();
+      console.log(elt.nodeValue);
       setImmediate(ext(elt));
     }
     elt = null;
