@@ -284,13 +284,13 @@
   }
   function twemojiNode(e) {
     var ql, i, elt;
-    function ext(elt) {elt.innerHTML = twemoji.parse(elt.innerHTML, {size: elt.$s});}
+    function ext(elt) {return function extender() {elt.innerHTML = twemoji.parse(elt.innerHTML, {size: elt.$s});};}
     e = e || window.event;
     walkTheDOM(e.target, deepen);
     walkTheDOM(e.target, twemojiLoad);
     ql = twemojiQueue.length;
     twemojiQueue.sort(function deeper(a, b) {return a.$depth - b.$depth || a.$s - b.$s;});
-    for (i = ql; i--;) ext(twemojiQueue.pop());
+    for (i = ql; i--;) setImmediate(ext(twemojiQueue.pop()));
   }
   function twemojiBody() {
     twemojiNode({target: document.body});
