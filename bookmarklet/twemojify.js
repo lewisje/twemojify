@@ -14,7 +14,7 @@
 // greatly inspired by the Twemojify extension by Monica Dinculescu
 (function twemojify(window, undefined) {
   'use strict';
-  var observer = {}, observerConfig, r, NATIVE_MUTATION_EVENTS;
+  var twemojiQueue = [], observer = {}, observerConfig, r, NATIVE_MUTATION_EVENTS;
   /*!
    * contentloaded.js
    *
@@ -256,8 +256,16 @@
     if (el.currentStyle) return el.currentStyle[cssprop]; // IE8 and earlier
     return el.style[cssprop]; // try to get inline style
   }
+  function deepen(el) {
+    if (el && !el.$depth) {
+      if (el === document.body) el.$depth = 1;
+      else el.$depth = el.parentNode.$depth + 1;
+      return true;
+    }
+    return false;
+  }
   function twemojiLoad(el) {
-    var nodes, nl, n, s;
+    var s;
     if (!el) return false;
     if (!/^(?:frame|iframe|link|noscript|script|style|textarea)$/i.test(el.nodeName) && !isEdit(el)) {
       if (!el.$twemoji && hasText(el)) {
@@ -266,19 +274,26 @@
         if (!s || s < 36) s = '16x16';
         else if (s < 72) s = '36x36';
         else s = '72x72';
-        nodes = el.childNodes;
-        nl = nodes.length;
-        for (n in nodes)
-          if (nodeFilter(nodes, n))
-            setImmediate(function ext() {twemoji.parse(nodes[n], {size: s});});
+        el.$s = s;
+        twemojiQueue.push(el);
       }
       return true;
     }
     return false;
   }
   function twemojiNode(e) {
+    var ql, i, elt;
+    function ext() {twemoji.parse(elt, {size: elt.$s});}
     e = e || window.event;
+    walkTheDOM(e.target, deepen);
     walkTheDOM(e.target, twemojiLoad);
+    ql = twemojiQueue.length;
+    twemojiQueue.sort(function deeper(a, b) {return a.$depth - b.$depth;});
+    for (i = ql; i--;) {
+      elt = twemojiQueue.pop();
+      setImmediate(ext);
+    }
+    elt = null;
   }
   function twemojiBody() {
     twemojiNode({target: document.body});
