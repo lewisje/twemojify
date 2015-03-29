@@ -265,17 +265,19 @@
     return false;
   }
   function twemojiLoad(el) {
-    var s;
+    var nodes, nl, n, s;
     if (!el) return false;
     if (!/^(?:frame|iframe|link|noscript|script|style|textarea)$/i.test(el.nodeName) && !isEdit(el)) {
       if (!el.$twemoji && hasText(el)) {
         el.$twemoji = true;
         s = parseFloat(getStyle(el, 'fontSize'));
-        if (!s || s < 36) s = '16x16';
-        else if (s < 72) s = '36x36';
+        if (!s || s < 35) s = '16x16';
+        else if (s < 70) s = '36x36';
         else s = '72x72';
         el.$s = s;
-        twemojiQueue.push(el);
+        nodes = el.childNodes;
+        nl = nodes.length;
+        if (nl) for (n in nodes) if (nodeFilter(nodes, n)) twemojiQueue.push(nodes[n]);
       }
       return true;
     }
@@ -283,7 +285,7 @@
   }
   function twemojiNode(e) {
     var ql, i, elt;
-    function ext(elt) {return function exten() {twemoji.parse(elt, {size: elt.$s});};}
+    function ext(elt) {return function exten() {twemoji.parse(elt.nodeValue, {size: elt.parentNode.$s});};}
     e = e || window.event;
     walkTheDOM(e.target, deepen);
     walkTheDOM(e.target, twemojiLoad);
