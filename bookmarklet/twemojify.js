@@ -283,7 +283,7 @@
   }
   function twemojiNode(e) {
     var ql, i, elt;
-    function ext() {twemoji.parse(elt, {size: elt.$s});}
+    function ext(elt) {return function exten() {twemoji.parse(elt, {size: elt.$s});};}
     e = e || window.event;
     walkTheDOM(e.target, deepen);
     walkTheDOM(e.target, twemojiLoad);
@@ -291,7 +291,7 @@
     twemojiQueue.sort(function deeper(a, b) {return a.$depth - b.$depth;});
     for (i = ql; i--;) {
       elt = twemojiQueue.pop();
-      setImmediate(ext);
+      setImmediate(ext(elt));
     }
     elt = null;
   }
