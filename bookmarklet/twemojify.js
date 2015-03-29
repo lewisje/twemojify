@@ -1,3 +1,17 @@
+// ==UserScript==
+// @author James Edward Lewis II
+// @description This loads Twitter emoji where possible, using the open-source Twemoji API.
+// @name Twemojify
+// @namespace greasyfork.org
+// @version 1.0.0
+// @icon http://twemoji.maxcdn.com/16x16/1f4d8.png
+// @include *
+// @grant none
+// @run-at document-start
+// @copyright 2015 James Edward Lewis II
+// ==/UserScript==
+
+// greatly inspired by the Twemojify extension by Monica Dinculescu
 (function twemojify(window, undefined) {
   'use strict';
   var observer = {}, observerConfig, r, NATIVE_MUTATION_EVENTS;
@@ -225,16 +239,17 @@
     return (n === 'input' && el.type === 'text') ||
       (n === 'textarea') || el.isContentEditable;
   }
+  function nodeFilter(nodes, n) {
+    return nodes.hasOwnProperty(n) && nodes[n].nodeType === Node.TEXT_NODE &&
+             /[^\s\w\u0000-\u203B\u2050-\u2116\u3299-\uD7FF\uE537-\uFFFD]/
+             .test(nodes[n].nodeValue);// /[^\s\w\u0000-\u0022\u0024-\u002F\u003A-\u00A8
+  }// \u00AA-\u00AD\u00AF-\u203B\u2050-\u2116\u3299-\uD7FF\uE537-\uF8FE\uF900-\uFFFF]/
   function hasText(el) {
     var nodes = el.childNodes, nl = nodes.length, nam = el.nodeName.toLowerCase(), n;
     if (nl && nam !== 'select' && nam !== 'noframes')
-      for (n in nodes)
-        if (nodes.hasOwnProperty(n) && nodes[n].nodeType === Node.TEXT_NODE &&
-            /[^\s\w\u0000-\u203B\u2050-\u2116\u3299-\uD7FF\uE537-\uFFFD]/
-            .test(nodes[n].nodeValue))
-          return true;
-    return false; // /[^\s\w\u0000-\u0022\u0024-\u002F\u003A-\u00A8\u00AA-\u00AD
-  }// \u00AF-\u203B\u2050-\u2116\u3299-\uD7FF\uE537-\uF8FE\uF900-\uFFFF]/
+      for (n in nodes) if (nodeFilter(nodes, n)) return true;
+    return false;
+  }
   function getStyle(el, cssprop) {
     if (document.defaultView && document.defaultView.getComputedStyle)
       return document.defaultView.getComputedStyle(el, '')[cssprop]; // W3C
@@ -242,7 +257,7 @@
     return el.style[cssprop]; // try to get inline style
   }
   function twemojiLoad(el) {
-    var s;
+    var nodes, nl, n, s;
     if (!el) return false;
     if (!/^(?:frame|iframe|link|noscript|script|style|textarea)$/i.test(el.nodeName) && !isEdit(el)) {
       if (!el.$twemoji && hasText(el)) {
@@ -251,7 +266,11 @@
         if (!s || s < 36) s = '16x16';
         else if (s < 72) s = '36x36';
         else s = '72x72';
-        setImmediate(function ext() {twemoji.parse(el, {size: s});});
+        nodes = el.childNodes;
+        nl = nodes.length;
+        for (n in nodes)
+          if (nodeFilter(nodes, n))
+            setImmediate(function ext() {twemoji.parse(nodes[n], {size: s});});
       }
       return true;
     }
