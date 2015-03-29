@@ -352,6 +352,6 @@
     };
   }
   r = document.readyState;
-  if (r === 'complete' || r === 'loaded' || r === 'interactive') init();
+  if (r === 'complete' || r === 'loaded' || r === 'interactive') init({type: 'load'});
   else cb_addEventListener(document, 'DOMContentLoaded', init, false);
 }(window));
