@@ -7,6 +7,7 @@
 // @icon http://twemoji.maxcdn.com/16x16/1f4d8.png
 // @include *
 // @grant none
+// @require https://rawgit.com/lewisje/twemojify/master/extension/twemoji.min.js
 // @run-at document-start
 // @copyright 2015 James Edward Lewis II
 // ==/UserScript==
@@ -241,8 +242,8 @@
   }
   function nodeFilter(nodes, n) {
     return nodes.hasOwnProperty(n) && nodes[n].nodeType === Node.TEXT_NODE &&
-             /[^\s\w\u0000-\u203B\u2050-\u2116\u3299-\uD7FF\uE537-\uFFFD]/
-             .test(nodes[n].nodeValue);// /[^\s\w\u0000-\u0022\u0024-\u002F\u003A-\u00A8
+             // /[^\s\w\u0000-\u203B\u2050-\u2116\u3299-\uD7FF\uE537-\uFFFD]/
+             twemoji.test(nodes[n].nodeValue);// /[^\s\w\u0000-\u0022\u0024-\u002F\u003A-\u00A8
   }// \u00AA-\u00AD\u00AF-\u203B\u2050-\u2116\u3299-\uD7FF\uE537-\uF8FE\uF900-\uFFFF]/
   function hasText(el) {
     var nodes = el.childNodes, nl = nodes.length, nam = el.nodeName.toLowerCase(), n;
@@ -283,17 +284,13 @@
   }
   function twemojiNode(e) {
     var ql, i, elt;
-    function ext(elt) {return function exten() {twemoji.parse(elt, {size: elt.$s});};}
+    function ext(elt) {elt.innerHTML = twemoji.parse(elt.innerHTML, {size: elt.$s});}
     e = e || window.event;
     walkTheDOM(e.target, deepen);
     walkTheDOM(e.target, twemojiLoad);
     ql = twemojiQueue.length;
-    twemojiQueue.sort(function deeper(a, b) {return a.$depth - b.$depth;});
-    for (i = ql; i--;) {
-      elt = twemojiQueue.pop();
-      setImmediate(ext(elt));
-    }
-    elt = null;
+    twemojiQueue.sort(function deeper(a, b) {return a.$depth - b.$depth || a.$s - b.$s;});
+    for (i = ql; i--;) ext(twemojiQueue.pop());
   }
   function twemojiBody() {
     twemojiNode({target: document.body});
