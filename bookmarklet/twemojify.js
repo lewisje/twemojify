@@ -245,8 +245,8 @@
     var s;
     if (!el) return false;
     if (!/^(?:frame|iframe|link|noscript|script|style|textarea)$/i.test(el.nodeName) && !isEdit(el)) {
-      if (!el.$emoji && hasText(el)) {
-        el.$emoji = true;
+      if (!el.$twemoji && hasText(el)) {
+        el.$twemoji = true;
         s = parseFloat(getStyle(el, 'fontSize'));
         if (!s || s < 36) s = '16x16';
         else if (s < 72) s = '36x36';
