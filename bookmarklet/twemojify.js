@@ -272,9 +272,9 @@
       if (!el.$twemoji && hasText(el)) {
         el.$twemoji = true;
         s = parseFloat(getStyle(el, 'fontSize'));
-        if (!s || s < 35) s = '16x16';
-        else if (s < 70) s = '36x36';
-        else s = '72x72';
+        if (!s || s < 35) s = 16;
+        else if (s < 70) s = 36;
+        else s = 72;
         el.$s = s;
         if (s !== el.parentNode.$s) twemojiQueue.push(el);
       }
@@ -283,14 +283,19 @@
     return false;
   }
   function twemojiNode(e) {
-    var ql, i, elt;
-    function ext(elt) {return function extender() {elt.innerHTML = twemoji.parse(elt.innerHTML, {size: elt.$s});};}
+    var ql, i;
+    function ext(elt) {
+      return function extender() {
+        var s = elt.$s;
+        twemoji.parse(elt, {size: [s, s].join('x')});
+      };
+    }
     e = e || window.event;
     walkTheDOM(e.target, deepen);
     walkTheDOM(e.target, twemojiLoad);
     ql = twemojiQueue.length;
-    twemojiQueue.sort(function deeper(a, b) {return a.$depth - b.$depth || a.$s - b.$s;});
-    for (i = ql; i--;) setImmediate(ext(twemojiQueue.pop()));
+    twemojiQueue.sort(function deeper(a, b) {return b.$depth - a.$depth || b.$s - a.$s;});
+    for (i = ql; i--;) setImmediate(ext(twemojiQueue.shift()));
   }
   function twemojiBody() {
     twemojiNode({target: document.body});
