@@ -291,6 +291,7 @@
       };
     }
     e = e || window.event;
+    return twemoji.parse(e.target);
     walkTheDOM(e.target, deepen);
     walkTheDOM(e.target, twemojiLoad);
     ql = twemojiQueue.length;
