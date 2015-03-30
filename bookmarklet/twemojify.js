@@ -14,7 +14,8 @@
 
 // greatly inspired by the Twemojify extension by Monica Dinculescu
 (function twemojify(window, undefined) {
-  'use strict';
+'use strict';
+function twemojifier() {
   var observer = {}, observerConfig, r, NATIVE_MUTATION_EVENTS;
   /*!
    * contentloaded.js
@@ -184,4 +185,22 @@
   r = document.readyState;
   if (r === 'complete' || r === 'loaded' || r === 'interactive') init({type: 'load'});
   else cb_addEventListener(document, 'DOMContentLoaded', init, false);
+}
+function loadScript(url, callback) {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  if (script.readyState)
+    script.onreadystatechange = function callReady() {
+      if (script.readyState === 'loaded' ||
+          script.readyState === 'complete') {
+        script.onreadystatechange = null;
+        callback();
+      }
+    };
+  else script.onload = callback;
+  script.src = url;
+  (document.head || document.getElementsByTagName('head')[0]).appendChild(script);
+}
+if (typeof twemoji === 'undefined') loadScript('//rawgit.com/lewisje/twemojify/master/extension/twemoji.min.js', twemojifier);
+else twemojifier();
 }(window));
