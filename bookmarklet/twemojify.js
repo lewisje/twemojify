@@ -4,7 +4,7 @@
 // @name Twemojify
 // @namespace greasyfork.org
 // @version 1.0.0
-// @icon http://twemoji.maxcdn.com/16x16/1f4d8.png
+// @icon https://twemoji.maxcdn.com/16x16/1f4d8.png
 // @include *
 // @grant none
 // @require https://rawgit.com/lewisje/twemojify/master/extension/twemoji.min.js
