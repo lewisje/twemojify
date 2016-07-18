@@ -1,4 +1,4 @@
-(function twemojify(window, undefined) { return; //disabled for now
+(function twemojify(window, undefined) {
   'use strict';
   var r;
   function init(e) {
