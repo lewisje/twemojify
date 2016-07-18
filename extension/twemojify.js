@@ -1,4 +1,4 @@
-(function twemojify(window, undefined) {
+(function twemojify(window, undefined) { return; //disabled for now
   'use strict';
   var r;
   function init(e) {
@@ -8,4 +8,4 @@
   r = document.readyState;
   if (r === 'complete' || r === 'loaded' || r === 'interactive') init();
   else document.addEventListener('DOMContentLoaded', init, false);
-}(window));
+})(window);
